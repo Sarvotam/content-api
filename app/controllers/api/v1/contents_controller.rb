@@ -7,17 +7,17 @@ module Api
 
       def index
         @contents = Content.all
-        render json: @contents
+        render json: ContentSerializer.new(@contents).serializable_hash.to_json
       end
 
       def show
-        render json: @content
+        render json: ContentSerializer.new(@content).serializable_hash.to_json
       end
 
       def create
         @content = current_user.contents.build(content_params)
         if @content.save
-          render json: @content, status: :created
+          render json: ContentSerializer.new(@content).serializable_hash.to_json, status: :created
         else
           render json: @content.errors, status: :unprocessable_entity
         end
@@ -25,7 +25,7 @@ module Api
 
       def update
         if @content.user == current_user && @content.update(content_params)
-          render json: @content
+          render json: ContentSerializer.new(@content).serializable_hash.to_json
         else
           render json: { error: "You are not authorized to update this content" }, status: :unauthorized
         end
@@ -47,7 +47,7 @@ module Api
       end
 
       def content_params
-        params.require(:content).permit(:title, :body)
+        params.permit(:title, :body)
       end
     end
   end
